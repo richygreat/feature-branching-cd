@@ -30,7 +30,7 @@ jobs:
         if: (!contains(github.head_ref, 'MAJOR') && !contains(github.head_ref, 'MINOR'))
         run: mvn -B versions:set -DremoveSnapshot=true versions:commit
 
-      - name: Deploy to GitHub Packages Apache Maven
+      - name: Maven verify
         run: mvn -B verify -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
