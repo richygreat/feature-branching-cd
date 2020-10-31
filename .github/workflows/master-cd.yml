@@ -4,12 +4,13 @@ on:
   pull_request:
     branches:
       - main
+    types: [closed]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -21,7 +22,7 @@ jobs:
 
       - name: Set Maven Release version
         if: contains(github.head_ref, 'HOTFIX')
-        run: mvn versions:set -DnewVersion=1.0.2
+        run: mvn versions:set -DnewVersion=1.0.3
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
@@ -31,8 +32,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Commit files
-        run: git commit -m "Release Versioned"
-
-      - name: Push files
-        run: git push origin main --force
+      - name: Commit and Push files
+        run: |
+          git config --local user.email "richygreat@gmail.com"
+          git config --local user.name "Richy Great"
+          git commit -m "Release Versioned"
+          git push origin main --force
