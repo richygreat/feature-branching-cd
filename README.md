@@ -1,2 +1,2 @@
 # feature-branching-cd
-Feature Branching CD tutorial project
+Feature Branching CD tutorial
