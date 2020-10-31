@@ -6,7 +6,7 @@
 
     <groupId>com.github.richygreat</groupId>
     <artifactId>feature-branching-cd</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
