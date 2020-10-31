@@ -20,8 +20,17 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Set Maven Release version
-        run: mvn -B versions:set -DremoveSnapshot=true -DgenerateBackupPoms=false
+      - name: Set Maven Major Release version
+        if: contains(github.head_ref, 'MAJOR')
+        run: mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.nextMajorVersion}.0.0 versions:commit
+
+      - name: Set Maven Minor Release version
+        if: contains(github.head_ref, 'MINOR')
+        run: mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.0 versions:commit
+
+      - name: Set Maven Hotfix Release version
+        if: contains(github.head_ref, 'HOTFIX')
+          run: mvn -B versions:set -DremoveSnapshot=true versions:commit
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
@@ -40,7 +49,7 @@ jobs:
           git push origin main --force
 
       - name: Set Maven Release version
-        run: mvn -B versions:set -DnextSnapshot=true -DgenerateBackupPoms=false
+        run: mvn -B versions:set -DnextSnapshot=true versions:commit
 
       - name: Commit and Push files for Next Snapshot
         run: |
