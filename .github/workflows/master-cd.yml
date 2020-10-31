@@ -34,7 +34,7 @@ jobs:
       - name: Get release version
         env:
           RELEASE_VERSION: mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout
-          run: echo "RELEASE_VERSION = $RELEASE_VERSION"
+        run: echo "RELEASE_VERSION = $RELEASE_VERSION"
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
