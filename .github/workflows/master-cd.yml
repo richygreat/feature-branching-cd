@@ -21,7 +21,6 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Set Maven Release version
-        if: contains(github.head_ref, 'HOTFIX')
         run: mvn versions:set -DremoveSnapshot=true -DgenerateBackupPoms=false
 
       - name: Build with Maven
@@ -41,7 +40,6 @@ jobs:
           git push origin main --force
 
       - name: Set Maven Release version
-        if: contains(github.head_ref, 'HOTFIX')
         run: mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false
 
       - name: Commit and Push files for Next Snapshot
