@@ -40,7 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Push released version $RELEASE_VERSION to master
+      - name: Push released version to master
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -48,10 +48,14 @@ jobs:
           git commit -m "Release Versioned $RELEASE_VERSION"
           git push origin main --force
 
+      - name: Set maven next snapshot version
+        run: mvn -B versions:set -DnextSnapshot=true versions:commit
+
+      - name: Set next snapshot version in ENV
+        run: echo "NEXT_SNAPSHOT_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
       - name: Prepare next snapshot version in master
         run: |
-          mvn -B versions:set -DnextSnapshot=true versions:commit
-          echo "NEXT_SNAPSHOT_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
           git add -A
           git commit -m "Snapshot versioned $NEXT_SNAPSHOT_VERSION"
           git push origin main --force
