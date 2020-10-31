@@ -31,11 +31,6 @@ jobs:
         if: (!contains(github.head_ref, 'MAJOR') && !contains(github.head_ref, 'MINOR'))
         run: mvn -B versions:set -DremoveSnapshot=true versions:commit
 
-      - name: Get release version
-        env:
-          RELEASE_VERSION: "0.0.0"
-        run: mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout >> $RELEASE_VERSION
-
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
@@ -49,7 +44,7 @@ jobs:
           git config --local user.email "richygreat@gmail.com"
           git config --local user.name "Richy Great"
           git add -A
-          git commit -m "Release Versioned $RELEASE_VERSION"
+          git commit -m "Release Versioned"
           git push origin main --force
 
       - name: Set Maven Release version
