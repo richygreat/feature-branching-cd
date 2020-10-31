@@ -22,7 +22,7 @@ jobs:
 
       - name: Set Maven Release version
         if: contains(github.head_ref, 'HOTFIX')
-        run: mvn versions:set -DnewVersion=1.0.3
+        run: mvn versions:set -DnewVersion=1.0.4
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
@@ -36,5 +36,6 @@ jobs:
         run: |
           git config --local user.email "richygreat@gmail.com"
           git config --local user.name "Richy Great"
+          git add -A
           git commit -m "Release Versioned"
           git push origin main --force
