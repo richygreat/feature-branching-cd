@@ -28,7 +28,7 @@ jobs:
         if: contains(github.head_ref, 'MINOR')
         run: mvn -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.0 versions:commit
 
-      - name: Set Maven Hotfix Release version
+      - name: Set Maven Hotfix or Build Release version
         if: (!contains(github.head_ref, 'MAJOR') && !contains(github.head_ref, 'MINOR'))
         run: mvn -B versions:set -DremoveSnapshot=true versions:commit
 
