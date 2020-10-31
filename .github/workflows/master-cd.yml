@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [closed]
+    types: [ closed ]
 
 jobs:
   build:
@@ -20,42 +20,38 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Set Maven Major Release version
+      - name: Set maven major release version
         if: contains(github.head_ref, 'MAJOR')
         run: mvn -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.nextMajorVersion}.0.0 versions:commit
 
-      - name: Set Maven Minor Release version
+      - name: Set maven minor release version
         if: contains(github.head_ref, 'MINOR')
         run: mvn -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.0 versions:commit
 
-      - name: Set Maven Hotfix or Build Release version
+      - name: Set maven hotfix or build release version
         if: (!contains(github.head_ref, 'MAJOR') && !contains(github.head_ref, 'MINOR'))
         run: mvn -B versions:set -DremoveSnapshot=true versions:commit
 
-      - name: Set release version
+      - name: Set current release version in ENV
         run: echo "RELEASE_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
-
-      - name: Publish to GitHub Packages Apache Maven
+      - name: Deploy to GitHub Packages Apache Maven
         run: mvn -B deploy -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Commit and Push files for Release
+      - name: Push released version to master
         run: |
-          git config --local user.email "richygreat@gmail.com"
-          git config --local user.name "Richy Great"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add -A
           git commit -m "Release Versioned $RELEASE_VERSION"
           git push origin main --force
 
-      - name: Set Maven Release version
-        run: mvn -B versions:set -DnextSnapshot=true versions:commit
-
-      - name: Commit and Push files for Next Snapshot
+      - name: Prepare next snapshot version in master
         run: |
+          mvn -B versions:set -DnextSnapshot=true versions:commit
+          echo "NEXT_SNAPSHOT_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
           git add -A
-          git commit -m "Snapshot Versioned"
+          git commit -m "Snapshot versioned $NEXT_SNAPSHOT_VERSION"
           git push origin main --force
